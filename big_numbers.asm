@@ -34,21 +34,21 @@ mov dl, FIRST_DISK_NUM
 mov dh, HEAD_NUM
 int 13h 
 
-
-
+; Суммируем два числа
 push OFFSET Num1 + (SECTOR_SIZE - 1)        ; Позиция последнего байта первого числа
 push OFFSET Num2 + (SECTOR_SIZE - 1)        ; Позиция последнего байта второго числа
-push OFFSET Buffer + (BUFFER_SIZE - 1)
-push SECTOR_SIZE
+push OFFSET Buffer + (BUFFER_SIZE - 1)		; Позиция последнего байта буфера в который запишем итоговую сумму
+push SECTOR_SIZE							; Размер слагаемых в байт (равен размеру сектора)
 call SumBytes  
 
-push offset Buffer
+; Записываем результат на диск 1
+push offset Buffer							; Адрес блока байт, который запишем на диск
 call WriteToDrive
 
 jmp $
 
 SumBytes:
-    PUSH BP
+    push BP
     MOV BP, SP
     
     MOV CX, [BP+4]  ; Передали размер числа (не хотел "хардкодить" т.к. думал еще пригодиться эта ф-ия и тестировал на числах в памяти)
@@ -80,7 +80,7 @@ SumBytes:
     POP BP
     RET
     
-
+	
 WriteToDrive: 
     push BP
     mov BP, SP

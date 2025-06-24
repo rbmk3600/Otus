@@ -72,14 +72,16 @@ start:
 
 	mov [bx + CODE_SELECTOR +4], ecx
 	
-	;data segment
+	;
+	;СОЗДАЕМ СЕГМЕНТА ДАННЫХ
+	;
 	xor eax, eax
 	mov ecx, eax
 
 	mov ax, DATA_SEG_ADDRESS
 	
 	mov ecx, eax
-	shl ecx, 16 ; 
+	shl ecx, 16 
 	
 	mov cx, DATA_SEG_ADDRESS + 0x200 ; выделим 512 байт
 	mov bx, GDT
@@ -90,8 +92,9 @@ start:
 	mov ch, 10010010b 
 	mov [bx + DATA_SELECTOR + 4], ecx
 	
-	xchg bx, bx
-	;stack segment
+	;
+	;СОЗДАЕМ СЕГМЕНТ СТЕКА
+	;
 	xor eax, eax
 	mov ecx, eax
 	mov ax, STACK_SEG_ADDRESS
@@ -104,7 +107,6 @@ start:
 	mov ch, 10010110b ; P = 1, DPL = 00b, S = 1, TYPE = 011b, A=0
 	mov [bx + STACK_SELECTOR + 4], ecx
 	
-
 	xor eax, eax
 	mov edx, eax
 
@@ -129,31 +131,27 @@ start:
 	
 	use32
 
-init_pm:					   
+init_pm:	
+	; В отладчике как я понял, переход сюда означает, что режим мы сменили				   
 	mov ax, cs
 	nop
 	jmp $
 
 MsgBeforePM db 'REAL MODE ON',0x00
 
+;Регистр GTDR
 GTDR:
-
 GDT_lim dw ?
 GDT_addr dd ?
 GDT:
+
+;Резерв под таблицу GDT для 4 сегментов												
 GDT_EMPTY db 0x00 dup(8)
-												; limit 512
+
 GDT_CS db 0x00 dup(8)
 GDT_DS db 0x00 dup(8)
 GDT_SS db 0x00 dup(8)
-;
-;Сегмент кода
-
-Middle db 0x00
-
-Symbol db 0x00    
-
-
+ 
 
 db 510 - ($-$$ ) dup (0)
 db 0x55, 0xAA
